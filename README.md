@@ -59,7 +59,8 @@ spring.profiles.active=dev
 
 ## Design Goals / Approach
 
-- Version control and project management using GitHub
+- Version control using GitHub
+- Project management using GitHub Issues and Linear
 - API-First approach using OpenAPI and SwaggerHub
 - Test-driven development TDO: Red, Green, Refactor development cycle
 - Continuous integration/ continuous deployment using GitHub Actions
