@@ -47,4 +47,18 @@ public abstract class BaseEntity {
     public Date getUpdatedAt() {
         return updatedAt;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    
 }
