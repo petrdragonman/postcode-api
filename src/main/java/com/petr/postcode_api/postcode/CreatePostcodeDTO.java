@@ -9,18 +9,21 @@ public class CreatePostcodeDTO {
     @NotBlank
     private String suburb;
     @NotNull
-    private StateCode state;
+    private StateCode stateCode;
+
+    public CreatePostcodeDTO() {}
+
     public String getPostcode() {
         return postcode;
     }
     public String getSuburb() {
         return suburb;
     }
-    public StateCode getState() {
-        return state;
+    public StateCode getStateCode() {
+        return stateCode;
     }
     @Override
     public String toString() {
-        return "CreatePostcodeDTO [postcode=" + postcode + ", suburb=" + suburb + ", state=" + state + "]";
+        return "CreatePostcodeDTO [postcode=" + postcode + ", suburb=" + suburb + ", stateCode=" + stateCode + "]";
     }
 }

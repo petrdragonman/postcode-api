@@ -1,6 +1,5 @@
 package com.petr.postcode_api.postcode;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
-
 import jakarta.validation.constraints.Pattern;
 
 public class UpdatePostcodeDTO {
@@ -10,7 +9,7 @@ public class UpdatePostcodeDTO {
     @Pattern(regexp = "\\S+.*", message = "Field must not be empty or blank")
     private String suburb;
     
-    private StateCode state;
+    private StateCode stateCode;
 
     public String getPostcode() {
         return postcode;
@@ -20,13 +19,13 @@ public class UpdatePostcodeDTO {
         return suburb;
     }
 
-    public StateCode getState() {
-        return state;
+    public StateCode getStateCode() {
+        return stateCode;
     }
 
     @Override
     public String toString() {
-        return "UpdatePostcodeDTO [postcode=" + postcode + ", suburb=" + suburb + ", state=" + state + "]";
+        return "UpdatePostcodeDTO [postcode=" + postcode + ", suburb=" + suburb + ", stateCode=" + stateCode + "]";
     }
     
 }
