@@ -7,4 +7,5 @@ public class StatusCode {
     public static final int FORBIDDEN = 403; // No permission
     public static final int NOT_FOUND = 404; // Not found
     public static final int INTERNAL_SERVER_ERROR = 500; // Server internal error
+    public static final int CREATED = 201;
 }

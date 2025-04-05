@@ -2,10 +2,15 @@
 
 package com.petr.postcode_api.postcode;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 import com.petr.postcode_api.common.BaseEntity;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
@@ -26,6 +34,9 @@ public class PostcodeServiceTest {
 
     @Mock
     private PostcodeRepository postcodeRepository;
+    
+    @MockitoBean
+    private ModelMapper mapper;
 
     @InjectMocks
     private PostcodeService postcodeService;
@@ -78,6 +89,29 @@ public class PostcodeServiceTest {
             .containsExactly(1L, "2037", "Glebe", Postcode.StateCode.NSW, postcode.getCreatedAt());
 
         verify(postcodeRepository, times(1)).findById(1L);
+    }
+
+    @Test 
+    void createPostcode_shouldReturnPostcode() {
+        Postcode expectedPostcode = new Postcode();
+        expectedPostcode.setPostcode("2067");
+        expectedPostcode.setSuburb("Chadswood");
+        expectedPostcode.setStateCode(StateCode.NSW);
+
+        when(mapper.map(any(CreatePostcodeDTO.class), eq(Postcode.class)))
+            .thenReturn(expectedPostcode);
+
+        when(postcodeRepository.save(any(Postcode.class)))
+            .thenReturn(expectedPostcode);
+
+        Postcode result = postcodeService.createPostcode(new CreatePostcodeDTO());
+
+        verify(postcodeRepository).save(expectedPostcode);
+        assertNotNull(result);
+        assertEquals("2067", result.getPostcode());
+        assertEquals("Chadswood", result.getSuburb());
+        assertEquals(StateCode.NSW, result.getStateCode());
+        verify(postcodeRepository, times(1)).save(expectedPostcode);
     }
 
     @Test
