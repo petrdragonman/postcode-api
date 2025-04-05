@@ -5,20 +5,22 @@ package com.petr.postcode_api.postcode;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
+import com.petr.postcode_api.postcode.Postcode.StateCode;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -30,6 +32,9 @@ public class PostcodeControllerTest {
 
     @MockitoBean
     private PostcodeService postcodeService;
+
+    @MockitoBean
+    private ModelMapper mapper;
 
     @BeforeEach
     public void setup() {
@@ -125,26 +130,33 @@ public class PostcodeControllerTest {
     //         .body("[0].stateCode", equalTo("NSW"));
     // }
 
-    // @Test
-    // public void createPostcode_shouldReturn201() {
-    //     // Given
-    //     Postcode newPostcode = TestDataFactory.createPostcode(null, "2000", "Sydney", Postcode.StateCode.NSW);
-    //     Postcode savedPostcode = TestDataFactory.createPostcode(1L, "2000", "Sydney", Postcode.StateCode.NSW);
-        
-    //     given(postcodeService.savePostcode(any(Postcode.class)))
-    //         .willReturn(savedPostcode);
+    @Test
+    public void createPostcode_shouldReturn201() {
+        // Given
+        Postcode expectedPostcode = new Postcode();
+        expectedPostcode.setPostcode("2067");
+        expectedPostcode.setSuburb("Chadswood");
+        expectedPostcode.setStateCode(StateCode.NSW);
 
-    //     // When + Then
-    //     given()
-    //         .contentType(ContentType.JSON)
-    //         .body(newPostcode)
-    //     .when()
-    //         .post("/postcodes")
-    //     .then()
-    //         .statusCode(HttpStatus.CREATED.value())
-    //         .header("Location", containsString("/api/postcodes/1"))
-    //         .body("postcode", equalTo("2000"));
-    // }
+        when(mapper.map(any(CreatePostcodeDTO.class), eq(Postcode.class)))
+            .thenReturn(expectedPostcode);
+        
+        given(postcodeService.createPostcode(any(CreatePostcodeDTO.class)))
+            .willReturn(expectedPostcode);
+        given()
+            .contentType(ContentType.JSON)
+            .body(expectedPostcode)
+        .when()
+            .post("/postcodes")
+        .then()
+            .statusCode(HttpStatus.OK.value())
+            .body("flag", equalTo(true))
+            .body("code", equalTo(200))
+            .body("message", equalTo("Add Success"))
+            .body("data.postcode", equalTo("2067"))
+            .body("data.suburb", equalTo("Chadswood"))
+            .body("data.stateCode", equalTo("NSW"));
+    }
 
     @Test
     public void getPostcodeById_shouldReturn400ForInvalidIdFormat() {
@@ -168,93 +180,3 @@ public class PostcodeControllerTest {
         }
     }
 }
-
-
-
-// package com.petr.postcode_api.postcode;
-// import static org.mockito.BDDMockito.given;
-// import java.util.ArrayList;
-// import java.util.List;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.context.bean.override.mockito.MockitoBean;
-// import org.springframework.test.web.servlet.MockMvc;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; // .*
-
-// import com.petr.postcode_api.common.StatusCode;
-// import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
-// import com.petr.postcode_api.postcode.Postcode.StateCode;
-
-// @SpringBootTest
-// @AutoConfigureMockMvc
-// public class PostcodeControllerTest {
-    
-//     @Autowired
-//     MockMvc mockMvc;
-
-//     @MockitoBean
-//     PostcodeService postcodeService;
-
-//     List<Postcode> postcodes = new ArrayList<>();
-
-//     @BeforeEach
-//     void setup() {
-//         this.postcodes = new ArrayList<>();
-//         Postcode p1 = new Postcode();
-//         p1.setPostcode("2037");
-//         p1.setSuburb("Glebe");
-//         p1.setStateCode(StateCode.NSW);
-//         this.postcodes.add(p1);
-//         Postcode p2 = new Postcode();
-//         p1.setPostcode("2037");
-//         p1.setSuburb("Forest Lodge");
-//         p1.setStateCode(StateCode.NSW);
-//         this.postcodes.add(p2);
-//         Postcode p3 = new Postcode();
-//         p1.setPostcode("2039");
-//         p1.setSuburb("Pyrmont");
-//         p1.setStateCode(StateCode.NSW);
-//         this.postcodes.add(p3);
-//         Postcode p4 = new Postcode();
-//         p1.setPostcode("2000");
-//         p1.setSuburb("Sydney");
-//         p1.setStateCode(StateCode.NSW);
-//         this.postcodes.add(p4);
-//     }
-
-//     // @Test
-//     // void findPostcodeById_Success() throws Exception {
-//     //     // given
-//     //     given(this.postcodeService.getById(postcodes.get(0).getId())).willReturn(this.postcodes.get(0));
-
-//     //     // when and then
-//     //     this.mockMvc.perform(get("/postcodes/" + postcodes.get(0).getId()).accept(MediaType.APPLICATION_JSON))
-//     //         .andExpect(jsonPath("$.flag").value(true))
-//     //         .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
-//     //         //.andExpect(jsonPath("$.code").value(HttpStatus.OK))
-//     //         .andExpect(jsonPath("$.message").value("Find One Success"))
-//     //         .andExpect(jsonPath("$.data.id").value(postcodes.get(0).getId()))
-//     //         .andExpect(jsonPath("$.data.postcode").value(postcodes.get(0).getPostcode()));    
-//     // }
-
-//     @Test
-//     void findPostcodeById_NotFound() throws Exception {
-//         // given
-//         given(this.postcodeService.getById(postcodes.get(0).getId())).willThrow(new PostcodeNotFoundException(postcodes.get(0).getId()));
-
-//         // when and then
-//         this.mockMvc.perform(get("/postcodes/" + postcodes.get(0).getId()).accept(MediaType.APPLICATION_JSON))
-//             .andExpect(jsonPath("$.flag").value(false))
-//             .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
-//             //.andExpect(jsonPath("$.code").value(HttpStatus.OK))
-//             .andExpect(jsonPath("$.message").value("Could not find postcode with id "))
-//             .andExpect(jsonPath("$.data").isEmpty());
-            
-//     }
-// }
