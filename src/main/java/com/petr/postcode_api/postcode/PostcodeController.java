@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.petr.postcode_api.common.Result;
 import com.petr.postcode_api.common.StatusCode;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -25,10 +27,10 @@ public class PostcodeController {
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundPostcode);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public Result getAllPostcodes() {
-        //return this.postcodeService.getAll();
-        return null;
+        List<Postcode>  foundPostcodes = this.postcodeService.getAll();
+        return new Result(true, StatusCode.SUCCESS, "Find All Success", foundPostcodes);
     }
     
 }

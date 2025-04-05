@@ -9,6 +9,9 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,11 +52,9 @@ public class PostcodeControllerTest {
             .get("/postcodes/{id}")
         .then()
         .statusCode(HttpStatus.OK.value())
-        // Assert the wrapper structure first
         .body("flag", equalTo(true))
         .body("code", equalTo(200))
         .body("message", equalTo("Find One Success"))
-        // Then assert the nested data
         .body("data.id", equalTo(id.intValue()))
         .body("data.postcode", equalTo("2037"))
         .body("data.suburb", equalTo("Glebe"))
@@ -74,7 +75,6 @@ public class PostcodeControllerTest {
         .when()
             .get("/postcodes/{id}")
         .then()
-            .log().all()
             .statusCode(HttpStatus.NOT_FOUND.value())
             .body("flag", equalTo(false))
             .body("code", equalTo(HttpStatus.NOT_FOUND.value()))
@@ -82,25 +82,28 @@ public class PostcodeControllerTest {
             .body("data", nullValue());
     }
 
-    // @Test
-    // public void getAllPostcodes_shouldReturnList() {
-    //     // Given
-    //     List<Postcode> postcodes = List.of(
-    //         TestDataFactory.createPostcode(1L, "2000", "Sydney", Postcode.StateCode.NSW),
-    //         TestDataFactory.createPostcode(2L, "3000", "Melbourne", Postcode.StateCode.VIC)
-    //     );
-    //     given(postcodeService.getAllPostcodes()).willReturn(postcodes);
+    @Test
+    public void getAllPostcodes_shouldReturnList() {
+        // Given
+        List<Postcode> postcodes = List.of(
+            TestDataFactory.createPostcode(1L, "2000", "Sydney", Postcode.StateCode.NSW),
+            TestDataFactory.createPostcode(2L, "3000", "Melbourne", Postcode.StateCode.VIC)
+        );
+        given(postcodeService.getAll()).willReturn(postcodes);
 
-    //     // When + Then
-    //     given()
-    //     .when()
-    //         .get("/postcodes")
-    //     .then()
-    //         .statusCode(HttpStatus.OK.value())
-    //         .body("size()", equalTo(2))
-    //         .body("[0].postcode", equalTo("2000"))
-    //         .body("[1].postcode", equalTo("3000"));
-    // }
+        // When + Then
+        given()
+        .when()
+            .get("/postcodes")
+        .then()
+            .statusCode(HttpStatus.OK.value())
+            .body("flag", equalTo(true))
+            .body("code", equalTo(200))
+            .body("message", equalTo("Find All Success"))
+            .body("data.size()", equalTo(2))
+            .body("data[0].postcode", equalTo("2000"))
+            .body("data[1].postcode", equalTo("3000"));
+    }
 
     // @Test
     // public void getPostcodesByState_shouldFilterByState() {
@@ -156,7 +159,7 @@ public class PostcodeControllerTest {
     private static class TestDataFactory {
         public static Postcode createPostcode(Long id, String code, String suburb, Postcode.StateCode state) {
             Postcode postcode = new Postcode();
-            postcode.setId(id);  // Ensure ID is set
+            postcode.setId(id);
             postcode.setPostcode(code);
             postcode.setSuburb(suburb);
             postcode.setStateCode(state);

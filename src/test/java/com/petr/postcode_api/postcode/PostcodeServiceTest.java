@@ -5,7 +5,13 @@ package com.petr.postcode_api.postcode;
 import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.petr.postcode_api.common.BaseEntity;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
+import com.petr.postcode_api.postcode.Postcode.StateCode;
 
 @ExtendWith(MockitoExtension.class)
 public class PostcodeServiceTest {
@@ -22,6 +29,33 @@ public class PostcodeServiceTest {
 
     @InjectMocks
     private PostcodeService postcodeService;
+
+    List<Postcode> postcodes;
+
+    @BeforeEach
+    void setup() {
+        this.postcodes = new ArrayList<>();
+        Postcode p1 = new Postcode();
+        p1.setPostcode("2037");
+        p1.setSuburb("Glebe");
+        p1.setStateCode(StateCode.NSW);
+        this.postcodes.add(p1);
+        Postcode p2 = new Postcode();
+        p1.setPostcode("2037");
+        p1.setSuburb("Forest Lodge");
+        p1.setStateCode(StateCode.NSW);
+        this.postcodes.add(p2);
+        Postcode p3 = new Postcode();
+        p1.setPostcode("2039");
+        p1.setSuburb("Pyrmont");
+        p1.setStateCode(StateCode.NSW);
+        this.postcodes.add(p3);
+        Postcode p4 = new Postcode();
+        p1.setPostcode("2000");
+        p1.setSuburb("Sydney");
+        p1.setStateCode(StateCode.NSW);
+        this.postcodes.add(p4);
+    }
 
     @Test
     public void getById_shouldReturnPostcode_whenIdExists() {
@@ -60,6 +94,21 @@ public class PostcodeServiceTest {
         verify(postcodeRepository, times(1)).findById(invalidId);
     }
 
+    @Test
+    void findAllSuccess() {
+        // given
+        given(postcodeRepository.findAll()).willReturn(postcodes);
+
+        // when
+        List<Postcode> result = postcodeService.getAll();
+
+        // then
+        assertThat(result.size()).isEqualTo(this.postcodes.size());
+        verify(postcodeRepository, times(1)).findAll();
+    }
+
+    
+
     // Helper method to create a test Postcode with BaseEntity fields
     private Postcode createTestPostcode(Long id, String postcode, String suburb, Postcode.StateCode stateCode) {
         Postcode entity = new Postcode();
@@ -71,80 +120,3 @@ public class PostcodeServiceTest {
         return entity;
     }
 }
-
-
-
-
-
-
-
-
-
-
-// package com.petr.postcode_api.postcode;
-// import static org.mockito.Mockito.verify;
-// import java.util.Optional;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.Mockito;
-// import org.mockito.MockitoAnnotations;
-// import org.mockito.Spy;
-// import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
-// import com.petr.postcode_api.postcode.Postcode.StateCode;
-// import static org.mockito.BDDMockito.*;
-// import static org.assertj.core.api.Assertions.*;
-
-// public class PostcodeServiceTest {
-//     @Mock
-//     private PostcodeRepository postcodeRepository;
-
-//     @Spy
-//     @InjectMocks
-//     private PostcodeService postcodeService;
-
-//     @BeforeEach
-//     public void setup() {
-//         MockitoAnnotations.openMocks(this);
-//     }
-
-//     @Test
-//     public void getById_callsFindById() {
-//         // given
-//         Postcode postcode = new Postcode();
-//         postcode.setPostcode("2037");
-//         postcode.setSuburb("Glebe");
-//         postcode.setStateCode(StateCode.NSW);
-
-//         given(postcodeRepository.findById(postcode.getId())).willReturn(Optional.of(postcode));
-
-//         // when
-//         Postcode returnedPostcode = postcodeService.getById(postcode.getId());
-
-//         // then
-//         assertThat(returnedPostcode.getId()).isEqualTo(postcode.getId());
-//         assertThat(returnedPostcode.getPostcode()).isEqualTo(postcode.getPostcode());
-//         assertThat(returnedPostcode.getSuburb()).isEqualTo(postcode.getSuburb());
-//         assertThat(returnedPostcode.getStateCode()).isEqualTo(postcode.getStateCode());
-//         verify(postcodeRepository, times(1)).findById(postcode.getId());
-//     }
-
-//     @Test
-//     public void getById_idNotFound() {
-//         // given
-//         given(postcodeRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
-
-//         // when
-//         Throwable thrown = catchThrowable(() -> {
-//             Postcode returnedPostcode = postcodeService.getById(1L);
-//         });
-
-//         // then
-//         assertThat(thrown)
-//             .isInstanceOf(PostcodeNotFoundException.class)
-//             .hasMessage("Could not found postcode with id: " + 1L);
-//         verify(postcodeRepository, times(1)).findById(1L);
-//     }
-
-// }
