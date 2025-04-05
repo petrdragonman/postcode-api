@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,12 @@ public class PostcodeController {
     public Result createPostcode(@RequestBody @Valid CreatePostcodeDTO data) {
         Postcode newPostcode = this.postcodeService.createPostcode(data);
         return new Result(true, StatusCode.SUCCESS, "Add Success", newPostcode);
+    }
+
+    @DeleteMapping("/{id}")
+    public Result deleteById(@PathVariable Long id) {
+        boolean wasDeleted = this.postcodeService.deleteById(id);
+        return null;
     }
     
 }

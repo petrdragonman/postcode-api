@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
-        System.out.println("Creating ModelMapper bean");
+        //System.out.println("Creating ModelMapper bean");
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setSkipNullEnabled(true);
         mapper.typeMap(String.class, String.class).setConverter(new StringTrimConverter());
