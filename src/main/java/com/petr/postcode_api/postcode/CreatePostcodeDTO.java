@@ -2,11 +2,13 @@ package com.petr.postcode_api.postcode;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public class CreatePostcodeDTO {
-    @NotBlank
+    @NotBlank(message = "postcode is required")
+    @Pattern(regexp = "^\\d{4}$", message = "Invalid code: Must be exactly 4 digits (0-9)")
     private String postcode;
-    @NotBlank
+    @NotBlank(message = "suburb name is required")
     private String suburb;
     @NotNull
     private StateCode stateCode;
