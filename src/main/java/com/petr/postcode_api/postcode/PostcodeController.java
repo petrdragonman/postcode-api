@@ -47,7 +47,7 @@ public class PostcodeController {
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable Long id) {
         boolean wasDeleted = this.postcodeService.deleteById(id);
-        return null;
+        return new Result(wasDeleted, StatusCode.SUCCESS, "Deleted One Success");
     }
     
 }

@@ -159,6 +159,27 @@ public class PostcodeControllerTest {
     }
 
     @Test
+    public void deletePostcodeById_shoudReturnBoolean_Success() {
+        // Given
+        Long id = 1L;
+        Postcode postcode = TestDataFactory.createPostcode(id, "2037", "Glebe", Postcode.StateCode.NSW);
+        //Postcode testPostcode = new Postcode();
+        boolean result = true;
+        given(postcodeService.deleteById(id)).willReturn(result);
+
+        // When + Then
+        given()
+            .pathParam("id", id)
+        .when()
+            .get("/postcodes/{id}")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("flag", equalTo(true))
+        .body("code", equalTo(200))
+        .body("message", equalTo("Find One Success"));
+    }
+
+    @Test
     public void getPostcodeById_shouldReturn400ForInvalidIdFormat() {
         given()
             .pathParam("id", "invalid")
