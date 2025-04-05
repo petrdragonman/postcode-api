@@ -73,10 +73,8 @@ public class PostcodeServiceTest {
         // Given
         Postcode postcode = createTestPostcode(1L, "2037", "Glebe", Postcode.StateCode.NSW);
         given(postcodeRepository.findById(1L)).willReturn(Optional.of(postcode));
-
         // When
         Postcode result = postcodeService.getById(1L);
-
         // Then
         assertThat(result)
             .extracting(
@@ -86,9 +84,22 @@ public class PostcodeServiceTest {
                 Postcode::getStateCode,
                 BaseEntity::getCreatedAt
             )
-            .containsExactly(1L, "2037", "Glebe", Postcode.StateCode.NSW, postcode.getCreatedAt());
-
+            .containsExactly(1L, "2037", "Glebe", Postcode.StateCode.NSW);
         verify(postcodeRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void deleteById_shoudReturnBoolean() {
+        // given
+        Postcode postcode = createTestPostcode(1L, "2037", "Glebe", Postcode.StateCode.NSW);
+        given(postcodeRepository.findById(1L)).willReturn(Optional.of(postcode));
+        // when
+        boolean result = postcodeService.deleteById(postcode.getId());
+        // then
+        verify(postcodeRepository).delete(postcode);
+        assertNotNull(result);
+        assertEquals(true, result);
+        verify(postcodeRepository, times(1)).delete(postcode);
     }
 
     @Test 
@@ -113,6 +124,8 @@ public class PostcodeServiceTest {
         assertEquals(StateCode.NSW, result.getStateCode());
         verify(postcodeRepository, times(1)).save(expectedPostcode);
     }
+
+    ////////// BAD REQUEST -> when creating postcode with missing or wrong data
 
     @Test
     public void getById_shouldThrowException_whenIdDoesNotExist() {

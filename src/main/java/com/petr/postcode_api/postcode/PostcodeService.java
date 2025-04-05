@@ -1,5 +1,6 @@
 package com.petr.postcode_api.postcode;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,14 @@ public class PostcodeService {
     }
 
     public Postcode createPostcode(CreatePostcodeDTO data) {
-        //Postcode newPostcode = new Postcode();
-        //newPostcode.setPostcode(data.getPostcode());
-        //newPostcode.setSuburb(data.getSuburb());
-        //newPostcode.setStateCode(data.getStateCode());
         Postcode newPostcode = mapper.map(data, Postcode.class);
         return this.repo.save(newPostcode);
+    }
+
+    public boolean deleteById(Long id) {
+        Postcode result = this.getById(id);
+        this.repo.delete(result);
+        return true;
     }
     
 }
