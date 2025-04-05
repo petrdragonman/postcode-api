@@ -20,8 +20,7 @@ public class PostcodeService {
     }
 
     public List<Postcode> getAll() {
-        //return this.repo.findAll();
-        return List.of();
+        return this.repo.findAll();
     }
     
 }
