@@ -47,14 +47,14 @@ public class PostcodeController {
 
     @PatchMapping("/{id}")
     public Result updatePostcodeById(@PathVariable Long id, @Valid @RequestBody UpdatePostcodeDTO data) {
-        this.postcodeService.updatePostcode(id, data);
-        return null;
+        Postcode updatedPostcode = this.postcodeService.updatePostcode(id, data);
+        return new Result(true, StatusCode.SUCCESS, "Update Success", updatedPostcode);
     }
 
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable Long id) {
         boolean wasDeleted = this.postcodeService.deleteById(id);
-        return new Result(wasDeleted, StatusCode.SUCCESS, "Deleted One Success");
+        return new Result(wasDeleted, StatusCode.SUCCESS, "Delete Success");
     }
     
 }

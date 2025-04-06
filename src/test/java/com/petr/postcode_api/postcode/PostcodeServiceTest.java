@@ -148,7 +148,24 @@ public class PostcodeServiceTest {
         assertEquals("2037", result.getPostcode());
         assertEquals("Glebe", result.getSuburb());
         assertEquals(StateCode.NSW, result.getStateCode());
+        verify(postcodeRepository, times(1)).findById(oldPostcode.getId());
         verify(postcodeRepository, times(1)).save(any(Postcode.class));
+    }
+
+    @Test
+    public void updatePostcodeById_postcodeNotFound() {
+        // given
+        UpdatePostcodeDTO updateDTO = new UpdatePostcodeDTO();
+        updateDTO.setPostcode("2037");
+        updateDTO.setSuburb("Glebe");
+        updateDTO.setStateCode(StateCode.NSW);
+        when(postcodeRepository.findById(1L)).thenReturn(Optional.empty());
+        // when
+        assertThatThrownBy(() -> postcodeService.updatePostcode(1L, updateDTO))
+            .isInstanceOf(PostcodeNotFoundException.class)
+            .hasMessage("Could not found postcode with id: " + 1);
+        // then
+        verify(postcodeRepository, times(1)).findById(1L);
     }
     
     @Test
