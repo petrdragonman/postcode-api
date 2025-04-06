@@ -6,6 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 
+import jakarta.validation.Valid;
+
 @Service
 public class PostcodeService {
 
@@ -35,6 +37,16 @@ public class PostcodeService {
         Postcode result = this.getById(id);
         this.repo.delete(result);
         return true;
+    }
+
+    public Postcode updatePostcode(Long id, UpdatePostcodeDTO data) {
+        Postcode foundPostcode = this.getById(id);
+        //foundPostcode.setPostcode(data.getPostcode());
+        //foundPostcode.setSuburb(data.getSuburb());
+        //foundPostcode.setStateCode(data.getStateCode());
+        mapper.map(data, foundPostcode);
+        this.repo.save(foundPostcode);
+        return foundPostcode;
     }
     
 }

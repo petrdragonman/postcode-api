@@ -125,8 +125,32 @@ public class PostcodeServiceTest {
         verify(postcodeRepository, times(1)).save(expectedPostcode);
     }
 
-    ////////// BAD REQUEST -> when creating postcode with missing or wrong data
-
+    @Test
+    public void updatePostcodeById_shouldReturnUpdatedPostcode_success() {
+        // given
+        Postcode oldPostcode = new Postcode();
+        oldPostcode.setId(1L);
+        oldPostcode.setPostcode("2067");
+        oldPostcode.setSuburb("Chadswood");
+        oldPostcode.setStateCode(StateCode.NSW);
+        UpdatePostcodeDTO updateDTO = new UpdatePostcodeDTO();
+        updateDTO.setPostcode("2037");
+        updateDTO.setSuburb("Glebe");
+        updateDTO.setStateCode(StateCode.NSW);
+        when(postcodeRepository.findById(1L)).thenReturn(Optional.of(oldPostcode));
+        when(postcodeRepository.save(any (Postcode.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // when
+        Postcode result = postcodeService.updatePostcode(1L, updateDTO);
+        // then
+        verify(postcodeRepository).findById(oldPostcode.getId());
+        verify(postcodeRepository).save(any(Postcode.class));
+        assertEquals("2037", result.getPostcode());
+        assertEquals("2037", result.getPostcode());
+        assertEquals("Glebe", result.getSuburb());
+        assertEquals(StateCode.NSW, result.getStateCode());
+        verify(postcodeRepository, times(1)).save(any(Postcode.class));
+    }
+    
     @Test
     public void getById_shouldThrowException_whenIdDoesNotExist() {
         // Given
