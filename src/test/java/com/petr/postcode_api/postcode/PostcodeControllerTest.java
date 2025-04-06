@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import com.petr.postcode_api.common.StatusCode;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
 
@@ -159,11 +161,53 @@ public class PostcodeControllerTest {
     }
 
     @Test
+    public void updatePostcodeById_success() {
+        // Given
+        Postcode expectedPostcode = new Postcode();
+        expectedPostcode.setPostcode("2067");
+        expectedPostcode.setSuburb("Chatswood");
+        expectedPostcode.setStateCode(StateCode.NSW);
+
+        when(mapper.map(any(UpdatePostcodeDTO.class), eq(Postcode.class)))
+            .thenReturn(expectedPostcode);
+        
+        given(postcodeService.updatePostcode(eq(expectedPostcode.getId()), any(UpdatePostcodeDTO.class)))
+            .willReturn(expectedPostcode);
+        given()
+            .contentType(ContentType.JSON)
+            .body(expectedPostcode)
+        .when()
+            .patch("/postcodes/"+1L)
+        .then()
+            .statusCode(HttpStatus.OK.value())
+            .body("flag", equalTo(true))
+            .body("code", equalTo(200))
+            .body("message", equalTo("Update Success"));
+    }
+
+    @Test
+    public void updatePostcodeById_postcodeNotFound() {
+        // given
+        Long invalidId = 999L;
+        given(postcodeService.getById(invalidId))
+            .willThrow(new PostcodeNotFoundException(invalidId));
+
+        given()
+            .pathParam("id", invalidId)
+        .when()
+            .get("/postcodes/{id}")
+        .then()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .body("flag", equalTo(false))
+            .body("code", equalTo(HttpStatus.NOT_FOUND.value()))
+            .body("message", containsString("Could not found postcode with id: " + invalidId))
+            .body("data", nullValue());
+    }
+
+    @Test
     public void deletePostcodeById_shoudReturnBoolean_Success() {
         // Given
         Long id = 1L;
-        Postcode postcode = TestDataFactory.createPostcode(id, "2037", "Glebe", Postcode.StateCode.NSW);
-        //Postcode testPostcode = new Postcode();
         boolean result = true;
         given(postcodeService.deleteById(id)).willReturn(result);
 
