@@ -27,5 +27,19 @@ public class UpdatePostcodeDTO {
     public String toString() {
         return "UpdatePostcodeDTO [postcode=" + postcode + ", suburb=" + suburb + ", stateCode=" + stateCode + "]";
     }
+
+    public UpdatePostcodeDTO(){}
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    public void setSuburb(String suburb) {
+        this.suburb = suburb;
+    }
+
+    public void setStateCode(StateCode stateCode) {
+        this.stateCode = stateCode;
+    }
     
 }

@@ -66,6 +66,4 @@ public class Postcode extends BaseEntity {
     public String toString() {
         return "Postcode [postcode=" + postcode + ", suburb=" + suburb + ", stateCode=" + stateCode + "]";
     }
-
-    
 }
