@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
+import com.petr.postcode_api.common.exceptions.UserNotFoundException;
 
 //@Slf4j
 @ControllerAdvice
@@ -31,6 +32,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     Result handlePostcodeNotFoundException(PostcodeNotFoundException ex) {
         //log.error("Postcode not found: {}", ex.getMessage());
+        return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Result handleUserNotFoundException(UserNotFoundException ex) {
         return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
     }
 
