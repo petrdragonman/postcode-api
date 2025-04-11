@@ -2,6 +2,7 @@ package com.petr.postcode_api.user;
 
 import java.util.List;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.petr.postcode_api.common.exceptions.UserNotFoundException;
 
@@ -9,10 +10,12 @@ import com.petr.postcode_api.common.exceptions.UserNotFoundException;
 public class UserService {
     private UserRepository repo;
     private ModelMapper mapper;
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repo, ModelMapper mapper) {
+    public UserService(UserRepository repo, ModelMapper mapper, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAll() {
@@ -24,9 +27,9 @@ public class UserService {
     }
 
     public User createUser(CreateUserDTO data) {
-        // encode password before saving it
         User newUser = mapper.map(data, User.class);
-        return this.repo.saveAndFlush(newUser);
+        newUser.setPassword(passwordEncoder.encode(data.getPassword()));
+        return this.repo.save(newUser);
     }
 
     public User updateUser(Long id, UpdateUserDTO data) {
