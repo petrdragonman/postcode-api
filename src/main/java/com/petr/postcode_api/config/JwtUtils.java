@@ -30,7 +30,7 @@ public class JwtUtils {
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // Remove "Bearer " prefix
+            return bearerToken.substring(7);
         }
         return null;
     }
@@ -78,7 +78,7 @@ public class JwtUtils {
         } catch (SignatureException ex) {
             logger.error("Invalid JWT signature: {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty: {}", ex.getMessage());
+            logger.error("JWT string is empty: {}", ex.getMessage());
         }
         return false;
     }
