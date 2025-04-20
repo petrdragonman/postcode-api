@@ -34,27 +34,28 @@ public class UserController {
         return new Result(true, StatusCode.SUCCESS, "Find All Success", foundUsers);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("{id}")
     public Result getUserById(@PathVariable Long id) throws Exception {
         User foundUser = this.userService.getById(id);
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundUser);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Result createUser(@RequestBody @Valid CreateUserDTO data) {
         User newUser = this.userService.createUser(data);
         return new Result(true, StatusCode.SUCCESS,"Add Success", newUser);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public Result updateUserById(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO data) {
         User updatedUser = this.userService.updateUser(id, data);
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedUser);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable Long id) {
         boolean wasDeleted = this.userService.deleteById(id);

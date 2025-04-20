@@ -3,13 +3,13 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
+import com.petr.postcode_api.common.exceptions.SuburbNotFoundException;
 
 @Service
 public class PostcodeService {
 
     private PostcodeRepository repo;
     private ModelMapper mapper;
-
 
     public PostcodeService(PostcodeRepository repo, ModelMapper mapper) {
         this.repo = repo;
@@ -43,6 +43,22 @@ public class PostcodeService {
         //mapper.map(data, foundPostcode);
         this.repo.save(foundPostcode);
         return foundPostcode;
+    }
+
+    public List<Postcode> getBySuburb(String suburb) {
+        List<Postcode> result = this.repo.findBySuburb(suburb).orElseThrow(() -> new SuburbNotFoundException(suburb));
+        if(result.isEmpty()) {
+            throw new SuburbNotFoundException(suburb);
+        }
+        return result;
+    }
+
+    public List<Postcode> getByPostcode(String postcode) {
+        List<Postcode> result = this.repo.findByPostcode(postcode).orElseThrow(() -> new PostcodeNotFoundException(postcode));
+        if(result.isEmpty()) {
+            throw new PostcodeNotFoundException(postcode);
+        }
+        return result;
     }
     
 }

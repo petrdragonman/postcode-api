@@ -1,5 +1,3 @@
-
-
 package com.petr.postcode_api.postcode;
 
 import static io.restassured.RestAssured.given;
@@ -19,7 +17,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import com.petr.postcode_api.common.StatusCode;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
 
@@ -41,7 +38,6 @@ public class PostcodeControllerTest {
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
-        //RestAssured.basePath = "/api";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
