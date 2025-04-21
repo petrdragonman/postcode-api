@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.petr.postcode_api.common.Result;
 import com.petr.postcode_api.common.StatusCode;
+import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 
 import jakarta.validation.Valid;
 
@@ -33,9 +34,24 @@ public class PostcodeController {
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundPostcode);
     }
 
+    @GetMapping("/suburb/{suburb}")
+    public Result getPostcodeBySuburb(@PathVariable String suburb) {
+        List<Postcode> foundPostcode = this.postcodeService.getBySuburb(suburb);
+        return new Result(true, StatusCode.SUCCESS, "Find One Success", foundPostcode);
+    }
+
+    @GetMapping("/postcode/{postcode}")
+    public Result getPostcodeByPostcode(@PathVariable String postcode) {
+        List<Postcode> foundPostcode = this.postcodeService.getByPostcode(postcode);
+        if(foundPostcode.isEmpty()) {
+            new PostcodeNotFoundException(postcode);
+        }
+        return new Result(true, StatusCode.SUCCESS, "Find One Success", foundPostcode);
+    }
+
     @GetMapping
     public Result getAllPostcodes() {
-        List<Postcode>  foundPostcodes = this.postcodeService.getAll();
+        List<Postcode> foundPostcodes = this.postcodeService.getAll();
         return new Result(true, StatusCode.SUCCESS, "Find All Success", foundPostcodes);
     }
 

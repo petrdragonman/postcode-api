@@ -1,11 +1,9 @@
-
-
 package com.petr.postcode_api.postcode;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
@@ -23,8 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import com.petr.postcode_api.common.BaseEntity;
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
 import com.petr.postcode_api.postcode.Postcode.StateCode;
@@ -35,7 +31,7 @@ public class PostcodeServiceTest {
     @Mock
     private PostcodeRepository postcodeRepository;
     
-    @MockitoBean
+    @Mock
     private ModelMapper mapper;
 
     @InjectMocks
@@ -81,12 +77,30 @@ public class PostcodeServiceTest {
                 BaseEntity::getId,
                 Postcode::getPostcode,
                 Postcode::getSuburb,
-                Postcode::getStateCode,
-                BaseEntity::getCreatedAt
+                Postcode::getStateCode
             )
             .containsExactly(1L, "2037", "Glebe", Postcode.StateCode.NSW);
         verify(postcodeRepository, times(1)).findById(1L);
     }
+
+    // @Test
+    // public void getBySuburb_shouldReturnPostcode_whenSuburbExists() {
+    //     // given
+    //     Postcode postcode = createTestPostcode(1L, "2037", "Glebe", Postcode.StateCode.NSW);
+    //     given(postcodeRepository.findBySuburb(postcode.getSuburb())).willReturn(Optional.of(postcode));
+    //     // when
+    //     Postcode result = postcodeService.getBySuburb(postcode.getSuburb());
+    //     // then
+    //     assertThat(result)
+    //         .extracting(
+    //             BaseEntity::getId,
+    //             Postcode::getPostcode,
+    //             Postcode::getSuburb,
+    //             Postcode::getStateCode
+    //         )
+    //         .containsExactly(1L, "2037", "Glebe", Postcode.StateCode.NSW);
+    //     verify(postcodeRepository, times(1)).findBySuburb(postcode.getSuburb());
+    // }
 
     @Test
     void deleteById_shoudReturnBoolean() {
@@ -104,24 +118,32 @@ public class PostcodeServiceTest {
 
     @Test 
     void createPostcode_shouldReturnPostcode() {
+        // Given
+        CreatePostcodeDTO dto = new CreatePostcodeDTO();
         Postcode expectedPostcode = new Postcode();
         expectedPostcode.setPostcode("2067");
         expectedPostcode.setSuburb("Chadswood");
         expectedPostcode.setStateCode(StateCode.NSW);
 
-        when(mapper.map(any(CreatePostcodeDTO.class), eq(Postcode.class)))
+        // Mock mappings
+        when(mapper.map(dto, Postcode.class))
+            .thenReturn(expectedPostcode);
+        
+        when(postcodeRepository.save(expectedPostcode))
             .thenReturn(expectedPostcode);
 
-        when(postcodeRepository.save(any(Postcode.class)))
-            .thenReturn(expectedPostcode);
+        // When
+        Postcode result = postcodeService.createPostcode(dto);
 
-        Postcode result = postcodeService.createPostcode(new CreatePostcodeDTO());
+        // Then
+        assertAll("Verify postcode creation",
+            () -> assertNotNull(result, "Result should not be null"),
+            () -> assertEquals("2067", result.getPostcode(), "Postcode mismatch"),
+            () -> assertEquals("Chadswood", result.getSuburb(), "Suburb mismatch"),
+            () -> assertEquals(StateCode.NSW, result.getStateCode(), "State code mismatch")
+        );
 
-        verify(postcodeRepository).save(expectedPostcode);
-        assertNotNull(result);
-        assertEquals("2067", result.getPostcode());
-        assertEquals("Chadswood", result.getSuburb());
-        assertEquals(StateCode.NSW, result.getStateCode());
+        verify(mapper, times(1)).map(dto, Postcode.class);
         verify(postcodeRepository, times(1)).save(expectedPostcode);
     }
 
@@ -163,7 +185,7 @@ public class PostcodeServiceTest {
         // when
         assertThatThrownBy(() -> postcodeService.updatePostcode(1L, updateDTO))
             .isInstanceOf(PostcodeNotFoundException.class)
-            .hasMessage("Could not found postcode with id: " + 1);
+            .hasMessage("Could not find postcode with id: " + 1);
         // then
         verify(postcodeRepository, times(1)).findById(1L);
     }
@@ -177,7 +199,7 @@ public class PostcodeServiceTest {
         // When + Then
         assertThatThrownBy(() -> postcodeService.getById(invalidId))
             .isInstanceOf(PostcodeNotFoundException.class)
-            .hasMessage("Could not found postcode with id: " + invalidId);
+            .hasMessage("Could not find postcode with id: " + invalidId);
 
         verify(postcodeRepository, times(1)).findById(invalidId);
     }
@@ -208,3 +230,31 @@ public class PostcodeServiceTest {
         return entity;
     }
 }
+
+
+
+
+/**
+ * @Test 
+    void createPostcode_shouldReturnPostcode() {
+        Postcode expectedPostcode = new Postcode();
+        expectedPostcode.setPostcode("2067");
+        expectedPostcode.setSuburb("Chadswood");
+        expectedPostcode.setStateCode(StateCode.NSW);
+
+        when(mapper.map(any(CreatePostcodeDTO.class), eq(Postcode.class)))
+            .thenReturn(expectedPostcode);
+
+        when(postcodeRepository.save(any(Postcode.class)))
+            .thenReturn(expectedPostcode);
+
+        Postcode result = postcodeService.createPostcode(new CreatePostcodeDTO());
+
+        verify(postcodeRepository).save(expectedPostcode);
+        assertNotNull(result);
+        assertEquals("2067", result.getPostcode());
+        assertEquals("Chadswood", result.getSuburb());
+        assertEquals(StateCode.NSW, result.getStateCode());
+        verify(postcodeRepository, times(1)).save(expectedPostcode);
+    }
+ */

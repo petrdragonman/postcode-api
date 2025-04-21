@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.petr.postcode_api.common.exceptions.PostcodeNotFoundException;
+import com.petr.postcode_api.common.exceptions.SuburbNotFoundException;
 import com.petr.postcode_api.common.exceptions.UserNotFoundException;
 
-//@Slf4j
 @ControllerAdvice
 @ResponseBody
 public class GlobalExceptionHandler {
@@ -28,10 +27,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(SuburbNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Result handleSuburbNotFoundException(SuburbNotFoundException ex) {
+        return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(PostcodeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     Result handlePostcodeNotFoundException(PostcodeNotFoundException ex) {
-        //log.error("Postcode not found: {}", ex.getMessage());
         return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
     }
 
