@@ -24,18 +24,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    // public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
-    //     this.jwtUtils = jwtUtils;
-    //     this.userDetailsService = userDetailsService;
-    // }
-
     public AuthTokenFilter() {}
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        logger.debug("AuthTokenFilter called for URI: {}", request.getRequestURI());
+    
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateToken(jwt)) {
@@ -56,7 +51,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
         }
-
+        // call to the next filter in chain
         filterChain.doFilter(request, response);
     }
 

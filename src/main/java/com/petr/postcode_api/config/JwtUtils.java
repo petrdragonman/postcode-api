@@ -24,9 +24,7 @@ public class JwtUtils {
     @Value("${spring.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    /**
-     * Extracts JWT from the "Authorization" header (Bearer Token).
-     */
+    // Extracts JWT from the "Authorization" header (Bearer Token).
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -35,9 +33,7 @@ public class JwtUtils {
         return null;
     }
 
-    /**
-     * Generates a JWT token from UserDetails.
-     */
+    // Generates a JWT token from UserDetails.
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
@@ -47,9 +43,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    /**
-     * Extracts the username (subject) from a JWT token.
-     */
+    // Extracts the username (subject) from a JWT token.
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -59,9 +53,7 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    /**
-     * Validates a JWT token (signature, expiration, etc.).
-     */
+    // Validates a JWT token (signature, expiration, etc.).
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -83,9 +75,7 @@ public class JwtUtils {
         return false;
     }
 
-    /**
-     * Creates a signing key from the base64-encoded secret.
-     */
+    // Creates a signing key from the base64-encoded secret.
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
