@@ -49,18 +49,11 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        //////////////////////////////////////////////////////////
         String jwtToken = jwtUtils.generateToken(userDetails);
-        //////////////////////////////////////////////////////////
-        //System.out.println("Converted authorities: " + userDetails.getAuthorities());
 
         List<Role> roles = userDetails.getAuthorities().stream()
                 .map(item -> Role.fromAuthority(item.getAuthority()))
                 .collect(Collectors.toList());
-
-        // List<Role> roles = userDetails.getAuthorities().stream()
-        // .map(item -> Role.valueOf(item.getAuthority()))
-        // .collect(Collectors.toList());
 
         LoginResponse response = new LoginResponse(jwtToken, roles, userDetails.getUsername());
 

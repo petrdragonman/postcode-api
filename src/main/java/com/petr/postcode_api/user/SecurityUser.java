@@ -1,7 +1,6 @@
 package com.petr.postcode_api.user;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,9 +20,6 @@ public class SecurityUser implements UserDetails {
         return Stream.of(user.getRole())
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
         .collect(Collectors.toList());
-        
-        // Convert your Role enum to Spring Security's GrantedAuthority
-        //return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     @Override
