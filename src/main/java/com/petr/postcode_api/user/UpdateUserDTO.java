@@ -1,6 +1,5 @@
 package com.petr.postcode_api.user;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
 public class UpdateUserDTO {
